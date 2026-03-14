@@ -1,4 +1,4 @@
-# ಸಾಕು docs
+# ಸಾಕು doc
 
 ## Installation
 

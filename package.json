@@ -1,14 +1,15 @@
 {
   "name": "saku-doc",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Fast static documentation generator — OpenAPI reference, Markdown docs, and blog in one command.",
   "bin": {
     "saku-doc": "./dist/cli.js"
   },
   "files": [
     "dist/cli.js",
-    "dist/src"
+    "dist/src",
+    "README.md"
   ],
   "engines": {
     "node": ">=22"
