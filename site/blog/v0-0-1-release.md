@@ -38,4 +38,4 @@ Add more nav items for blog and API sections as needed.
 - MDOC support
 - Versioning?
 
-Follow the [GitHub repo](https://github.com/azan-n/saku-docs) for updates.
+Follow the [GitHub repo](https://github.com/kaafihai/saku-docs) for updates.
