@@ -3,8 +3,9 @@ import { getCollection, render } from "astro:content";
 import { getConfigEnv } from "../../../lib/env";
 import DocsLayout from "../layouts/DocsLayout.astro";
 import BlogLayout from "../layouts/BlogLayout.astro";
+import BlogIndexLayout from "../layouts/BlogIndexLayout.astro";
 import OpenApiLayout from "../layouts/OpenApiLayout.astro";
-import { entryToSlug } from "../lib/slugUtils";
+import { entryToSlug, segmentToLabel } from "../lib/slugUtils";
 import {
     fetchSpec,
     collectOperations,
@@ -104,6 +105,7 @@ export async function getStaticPaths() {
 
         let firstSlug: string | undefined;
         let hasIndex = false;
+        const blogCards: { title: string; href: string; pubDate?: string; description?: string }[] = [];
 
         for (const entry of entries) {
             const slug = entryToSlug(entry.id, base);
@@ -111,6 +113,18 @@ export async function getStaticPaths() {
 
             if (isIndex) hasIndex = true;
             firstSlug ??= slug;
+
+            if (item.type === "blog") {
+                const parts = (entry.id as string).replace(/\.(md|mdoc)$/, "").split("/");
+                blogCards.push({
+                    title: (entry.data as any).title ?? segmentToLabel(parts[parts.length - 1]),
+                    href: `/${slug}`,
+                    pubDate: (entry.data as any).pubDate
+                        ? String((entry.data as any).pubDate)
+                        : undefined,
+                    description: (entry.data as any).description,
+                });
+            }
 
             paths.push({
                 params: { slug },
@@ -125,15 +139,40 @@ export async function getStaticPaths() {
                     apiInfo: null,
                     apiTags: [],
                     fetchError: null,
+                    blogCards: [],
                 },
             });
         }
 
         if (!hasIndex && firstSlug) {
-            paths.push({
-                params: { slug: base },
-                props: { entry: null, type: item.type, redirect: `/${firstSlug}` },
-            });
+            if (item.type === "blog") {
+                const sorted = [...blogCards].sort((a, b) => {
+                    const da = a.pubDate ? new Date(a.pubDate).getTime() : 0;
+                    const db = b.pubDate ? new Date(b.pubDate).getTime() : 0;
+                    return db - da;
+                });
+                paths.push({
+                    params: { slug: base },
+                    props: {
+                        entry: null,
+                        type: "blog-index",
+                        redirect: null,
+                        navIndex: i,
+                        base,
+                        operation: null,
+                        allOperations: [],
+                        apiInfo: null,
+                        apiTags: [],
+                        fetchError: null,
+                        blogCards: sorted,
+                    },
+                });
+            } else {
+                paths.push({
+                    params: { slug: base },
+                    props: { entry: null, type: item.type, redirect: `/${firstSlug}`, blogCards: [] },
+                });
+            }
         }
     }
 
@@ -168,6 +207,7 @@ const {
     apiInfo,
     apiTags,
     fetchError,
+    blogCards,
 } = Astro.props;
 
 if (redirect) return Astro.redirect(redirect);
@@ -196,6 +236,14 @@ const Content = rendered?.Content;
         >
             <Content />
         </BlogLayout>
+    )
+}
+{
+    type === "blog-index" && (
+        <BlogIndexLayout
+            title={segmentToLabel(base)}
+            cards={blogCards ?? []}
+        />
     )
 }
 {

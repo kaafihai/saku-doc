@@ -4,107 +4,104 @@ import BaseLayout from "./BaseLayout.astro";
 import { entryToSlug, segmentToLabel } from "../lib/slugUtils";
 
 interface Props {
-  title: string;
-  description?: string;
-  ogImage?: string;
-  canonicalUrl?: string;
-  noindex?: boolean;
-  navIndex: number;
-  base: string;
-  pubDate?: string | Date;
+    title: string;
+    description?: string;
+    ogImage?: string;
+    canonicalUrl?: string;
+    noindex?: boolean;
+    navIndex: number;
+    base: string;
+    pubDate?: string | Date;
 }
 
-const { title, description, ogImage, canonicalUrl, noindex, navIndex, base, pubDate } =
-  Astro.props;
+const {
+    title,
+    description,
+    ogImage,
+    canonicalUrl,
+    noindex,
+    navIndex,
+    base,
+    pubDate,
+} = Astro.props;
 
 const currentPath = Astro.url.pathname;
 const entries = await getCollection(`blog_${navIndex}` as any);
 
 const sorted = [...entries].sort((a: any, b: any) => {
-  const da = a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0;
-  const db = b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0;
-  return db - da; // newest first
+    const da = a.data.pubDate ? new Date(a.data.pubDate).getTime() : 0;
+    const db = b.data.pubDate ? new Date(b.data.pubDate).getTime() : 0;
+    return db - da; // newest first
 });
 
 type SidebarLink = { label: string; href: string; date?: string };
 
-const sidebarLinks: SidebarLink[] = sorted.map((entry: any) => {
-  const href = `/${entryToSlug(entry.id, base)}`;
-  const label = entry.data.title ?? segmentToLabel(entry.id.replace(/\.(md|mdoc)$/, "").split("/").pop()!);
-  const date = entry.data.pubDate
-    ? new Date(entry.data.pubDate).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
-    : undefined;
-  return { label, href, date };
+const navLinks: SidebarLink[] = sorted.map((entry: any) => {
+    const href = `/${entryToSlug(entry.id, base)}`;
+    const label =
+        entry.data.title ??
+        segmentToLabel(
+            entry.id
+                .replace(/\.(md|mdoc)$/, "")
+                .split("/")
+                .pop()!,
+        );
+    const date = entry.data.pubDate
+        ? new Date(entry.data.pubDate).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+          })
+        : undefined;
+    return { label, href, date };
 });
 
 function isActive(href: string): boolean {
-  return currentPath === href || currentPath === href + "/";
+    return currentPath === href || currentPath === href + "/";
 }
 
 const formattedDate = pubDate
-  ? new Date(pubDate).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  : undefined;
+    ? new Date(pubDate).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+      })
+    : undefined;
 ---
 
 <BaseLayout
-  title={title}
-  description={description}
-  ogImage={ogImage}
-  canonicalUrl={canonicalUrl}
-  noindex={noindex}
+    title={title}
+    description={description}
+    ogImage={ogImage}
+    canonicalUrl={canonicalUrl}
+    noindex={noindex}
 >
-  <slot name="head" slot="head" />
-  <div class="blog-layout d-flex">
-    <nav class="blog-sidebar border-end bg-body-secondary flex-shrink-0 overflow-y-auto">
-      <div class="d-flex flex-column gap-1 p-3">
-        <div class="text-uppercase fw-semibold small text-muted px-2 mb-2">Posts</div>
-        {
-          sidebarLinks.map((item) => (
-            <a
-              class:list={[
-                "nav-link py-1 px-2 rounded",
-                isActive(item.href) ? "active fw-semibold" : "text-body-secondary",
-              ]}
-              href={item.href}
-              aria-current={isActive(item.href) ? "page" : undefined}
-            >
-              <div>{item.label}</div>
-              {item.date && <div class="small text-muted">{item.date}</div>}
-            </a>
-          ))
-        }
-      </div>
-    </nav>
-    <main class="flex-grow-1 overflow-hidden">
-      <div class="container-md py-4 px-4">
-        <article>
-          <header class="mb-4">
-            <h1 class="mb-1">{title}</h1>
-            {formattedDate && <p class="text-muted small mb-0">{formattedDate}</p>}
-          </header>
-          <slot />
-        </article>
-      </div>
+    <slot name="head" slot="head" />
+    <nav aria-label="breadcrumb" class="border-bottom bg-body-tertiary"></nav>
+    <main>
+        <div class="container-md py-4 px-4">
+            <ol class="breadcrumb mb-0 small mb-4">
+                <li class="breadcrumb-item">
+                    <a href={`/${base}`} class="font-monospace">..</a>
+                </li>
+                <li
+                    class="breadcrumb-item active font-monospace"
+                    aria-current="page"
+                >
+                    {title}
+                </li>
+            </ol>
+            <article>
+                <header class="mb-4">
+                    <h1 class="mb-1">{title}</h1>
+                    {
+                        formattedDate && (
+                            <p class="text-muted small mb-0">{formattedDate}</p>
+                        )
+                    }
+                </header>
+                <slot />
+            </article>
+        </div>
     </main>
-  </div>
 </BaseLayout>
-
-<style>
-  .blog-sidebar {
-    width: 260px;
-    position: sticky;
-    top: 56px;
-    height: calc(100vh - 56px);
-  }
-  .blog-layout {
-    min-height: calc(100vh - 56px);
-  }
-</style>

@@ -1,7 +1,6 @@
 ---
 import { getConfigEnv } from "../../../lib/env";
 import type { SakuConfig } from "../../../lib/schema";
-import "halfmoon/css/halfmoon.min.css";
 import "../base.css";
 interface Props {
     title: string;
@@ -38,7 +37,7 @@ const isExternal = (item: NavItem) => item.type === "ghLink";
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="auto">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -70,6 +69,13 @@ const isExternal = (item: NavItem) => item.type === "ghLink";
         {ogImage && <meta name="twitter:image" content={ogImage} />}
 
         <meta name="generator" content={Astro.generator} />
+        <script is:inline>
+            const mq = window.matchMedia("(prefers-color-scheme: dark)");
+            document.documentElement.setAttribute("data-bs-theme", mq.matches ? "dark" : "light");
+            mq.addEventListener("change", (e) => {
+                document.documentElement.setAttribute("data-bs-theme", e.matches ? "dark" : "light");
+            });
+        </script>
         <slot name="head" />
     </head>
     <body>

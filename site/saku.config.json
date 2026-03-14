@@ -7,7 +7,7 @@
     {
       "label": "API",
       "type": "openapi",
-      "spec": "https://api.cryptlex.com/api-docs/v3/swagger.json"
+      "spec": "https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json"
     },
     {
       "type": "ghLink",

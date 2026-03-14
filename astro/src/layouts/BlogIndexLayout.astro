@@ -1,0 +1,64 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+
+interface BlogCard {
+  title: string;
+  href: string;
+  pubDate?: string | Date;
+  description?: string;
+}
+
+interface Props {
+  title: string;
+  cards: BlogCard[];
+}
+
+const { title, cards } = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <main>
+    <div class="container-md py-4 px-4">
+      <h1 class="mb-4">{title}</h1>
+      <div class="row row-cols-1 row-cols-md-2 g-4">
+        {
+          cards.map((card) => {
+            const formattedDate = card.pubDate
+              ? new Date(card.pubDate).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+              : undefined;
+            return (
+              <div class="col">
+                <a href={card.href} class="text-decoration-none">
+                  <div class="card h-100 blog-card">
+                    <div class="card-body">
+                      <h5 class="card-title">{card.title}</h5>
+                      {card.description && (
+                        <p class="card-text text-muted small">{card.description}</p>
+                      )}
+                    </div>
+                    {formattedDate && (
+                      <div class="card-footer text-muted small">{formattedDate}</div>
+                    )}
+                  </div>
+                </a>
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .blog-card {
+    transition: box-shadow 0.15s ease;
+  }
+  .blog-card:hover {
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+  }
+</style>
