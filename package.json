@@ -2,7 +2,7 @@
   "name": "saku-doc",
   "type": "module",
   "version": "0.0.2",
-  "description": "Fast static documentation generator — OpenAPI reference, Markdown docs, and blog in one command.",
+  "description": "Fast static documentation generator; OpenAPI reference, Markdown docs, and blog in one command.",
   "bin": {
     "saku-doc": "./dist/cli.js"
   },
@@ -17,7 +17,8 @@
   "scripts": {
     "build": "tsup lib/cli.ts",
     "develop": "tsup lib/cli.ts --watch --onSuccess \"node dist/cli.js develop -d site\"",
-    "watch": "tsup lib/cli.ts --watch --onSuccess \"node dist/cli.js build -d site\""
+    "watch": "tsup lib/cli.ts --watch --onSuccess \"node dist/cli.js build -d site\"",
+    "build:website": "pnpm build && node dist/cli.js build -d site --output build"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.1",

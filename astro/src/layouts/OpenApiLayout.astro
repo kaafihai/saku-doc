@@ -69,7 +69,7 @@ const isOverview =
             aria-controls="api-nav"
             aria-expanded="false"
         >
-            &#9776; API Navigation
+            &#9776;
         </button>
     </div>
 
@@ -80,65 +80,64 @@ const isOverview =
             aria-label="API navigation"
         >
             <div class="overflow-y-auto h-100">
-            <div class="d-flex flex-column gap-1 p-3">
-                <input
-                    id="api-search"
-                    type="search"
-                    class="form-control form-control-sm mb-1"
-                    placeholder="Search endpoints…"
-                    autocomplete="off"
-                />
-                <a
-                    class:list={[
-                        "nav-link py-1 px-2 rounded fw-semibold",
-                        isOverview ? "active" : "text-body-secondary",
-                    ]}
-                    href={overviewHref}
-                    aria-current={isOverview ? "page" : undefined}
-                >
-                    Overview
-                </a>
-                {
-                    Array.from(tagMap.entries()).map(([tag, ops]) => (
-                        <div class="mt-2" data-tag-group={tag}>
-                            <div class="text-uppercase fw-semibold small text-muted px-2 mb-1">
-                                {tag}
-                            </div>
-                            {ops.map((op) => (
-                                <a
-                                    class:list={[
-                                        "nav-link py-1 px-2 rounded d-flex align-items-center gap-2",
-                                        isActive(op)
-                                            ? "active fw-semibold"
-                                            : "text-body-secondary",
-                                    ]}
-                                    href={opHref(op)}
-                                    data-op-slug={op.slug}
-                                    aria-current={
-                                        isActive(op) ? "page" : undefined
-                                    }
-                                >
-                                    <span
+                <div class="d-flex flex-column gap-1 p-3">
+                    <input
+                        id="api-search"
+                        type="search"
+                        class="form-control form-control-sm mb-1"
+                        placeholder="Search endpoints…"
+                        autocomplete="off"
+                    />
+                    <a
+                        class:list={[
+                            "nav-link py-1 px-2 rounded fw-semibold",
+                            isOverview ? "active" : "text-body-secondary",
+                        ]}
+                        href={overviewHref}
+                        aria-current={isOverview ? "page" : undefined}
+                    >
+                        Overview
+                    </a>
+                    {
+                        Array.from(tagMap.entries()).map(([tag, ops]) => (
+                            <div class="mt-2" data-tag-group={tag}>
+                                <div class="text-uppercase fw-semibold small text-muted px-2 mb-1">
+                                    {tag}
+                                </div>
+                                {ops.map((op) => (
+                                    <a
                                         class:list={[
-                                            "badge text-uppercase flex-shrink-0",
-                                            `text-bg-${METHOD_COLORS[op.method] ?? "secondary"}`,
+                                            "nav-link py-1 px-2 rounded d-flex align-items-center gap-2",
+                                            isActive(op)
+                                                ? "active fw-semibold"
+                                                : "text-body-secondary",
                                         ]}
-                                        style="min-width: 3rem; text-align: center; font-size: 0.6rem;"
+                                        href={opHref(op)}
+                                        data-op-slug={op.slug}
+                                        aria-current={
+                                            isActive(op) ? "page" : undefined
+                                        }
                                     >
-                                        {op.method}
-                                    </span>
-                                    <span class="small text-truncate">
-                                        {op.summary ?? op.path}
-                                    </span>
-                                </a>
-                            ))}
-                        </div>
-                    ))
-                }
-            </div>
+                                        <span
+                                            class:list={[
+                                                "badge text-uppercase flex-shrink-0",
+                                                `text-bg-${METHOD_COLORS[op.method] ?? "secondary"}`,
+                                            ]}
+                                            style="min-width: 3rem; text-align: center; font-size: 0.6rem;"
+                                        >
+                                            {op.method}
+                                        </span>
+                                        <span class="small text-truncate">
+                                            {op.summary ?? op.path}
+                                        </span>
+                                    </a>
+                                ))}
+                            </div>
+                        ))
+                    }
+                </div>
             </div>
         </nav>
-
 
         <main class="flex-grow-1 overflow-hidden">
             <div class="container-md py-4 px-4">

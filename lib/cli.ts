@@ -50,7 +50,7 @@ function resolveConfig(
 
 program
   .command("build")
-  .description("Build docs")
+  .description("Build documentation")
   .option("-d, --directory <directory>", "documentation directory", ".")
   .option("--output <directory>", "output directory", DEFAULT_OUTPUT_DIR)
   .action(async (options) => {
@@ -59,7 +59,7 @@ program
 
 program
   .command("develop")
-  .description("Run dev server for docs")
+  .description("Run dev server for documentation")
   .option("-d, --directory <directory>", "documentation directory", ".")
   .option("--output <directory>", "output directory", DEFAULT_OUTPUT_DIR)
   .action(async (options) => {

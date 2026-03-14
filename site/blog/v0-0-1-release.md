@@ -1,10 +1,10 @@
 ---
 title: "v0.0.1 — First Release"
 pubDate: 2026-03-14
-description: The first public release of Saku Docs. Changelog and what's next.
+description: The first public release of Saku Doc. Changelog and what's next.
 ---
 
-Saku Docs `v0.0.1` is out. This is the first public release.
+Saku Doc `v0.0.1` is out. This is the first public release.
 
 ## What's Included
 
@@ -24,7 +24,7 @@ A minimal `saku.config.json`:
   "title": "My Docs",
   "site": "https://example.com",
   "nav": [
-    { "label": "Docs", "type": "docs", "dir": "./docs" }
+    { "label": "Docs", "type": "docs", "dir": "./documentation" }
   ]
 }
 ```

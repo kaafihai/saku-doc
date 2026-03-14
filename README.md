@@ -14,10 +14,10 @@ Create a `saku.config.json` in your project root:
 
 ```json
 {
-  "title": "Saku Docs",
-  "site": "https://sakudocs.kaafihai.com",
+  "title": "Saku Doc",
+  "site": "https://saku-doc.kaafihai.com",
   "nav": [
-    { "label": "Docs", "type": "docs", "dir": "./docs" },
+    { "label": "Documentation", "type": "docs", "dir": "./documentation" },
     { "label": "Blog", "type": "blog", "dir": "./blog" },
     { "label": "API", "type": "openapi", "spec": "https://api.com/oas.json" },
     { "type": "ghLink", "href": "https://github.com/kaafihai/saku-doc" }
