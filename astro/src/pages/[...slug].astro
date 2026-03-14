@@ -1,0 +1,213 @@
+---
+import { getCollection, render } from "astro:content";
+import { getConfigEnv } from "../../../lib/env";
+import DocsLayout from "../layouts/DocsLayout.astro";
+import BlogLayout from "../layouts/BlogLayout.astro";
+import OpenApiLayout from "../layouts/OpenApiLayout.astro";
+import { entryToSlug } from "../lib/slugUtils";
+import {
+    fetchSpec,
+    collectOperations,
+    HTTP_METHODS,
+    operationToSlug,
+    type OpenApiSpec,
+    type OperationDetail,
+    type OperationEntry,
+} from "../lib/openapiUtils";
+
+export async function getStaticPaths() {
+    const config = getConfigEnv();
+    const paths = [];
+
+    for (let i = 0; i < config.nav.length; i++) {
+        const item = config.nav[i];
+        if (item.type === "ghLink") continue;
+
+        const base = item.label.toLowerCase();
+
+        if (item.type === "openapi") {
+            let apiSpec: OpenApiSpec | null = null;
+            let fetchError: string | null = null;
+            try {
+                apiSpec = await fetchSpec(item.spec);
+            } catch (e: unknown) {
+                fetchError = e instanceof Error ? e.message : String(e);
+            }
+
+            const allOperations = apiSpec ? collectOperations(apiSpec) : [];
+            const apiInfo = apiSpec?.info ?? null;
+            const apiTags = apiSpec?.tags ?? [];
+
+            // Overview / index page
+            paths.push({
+                params: { slug: base },
+                props: {
+                    type: "openapi",
+                    entry: null,
+                    redirect: null,
+                    navIndex: i,
+                    base,
+                    operation: null,
+                    allOperations,
+                    apiInfo,
+                    apiTags,
+                    fetchError,
+                },
+            });
+
+            // Per-operation pages
+            if (apiSpec?.paths) {
+                for (const [path, pathItem] of Object.entries(apiSpec.paths)) {
+                    for (const method of HTTP_METHODS) {
+                        const op = pathItem[method];
+                        if (!op) continue;
+                        const opSlug = operationToSlug(
+                            method,
+                            path,
+                            op.operationId,
+                        );
+                        const operation: OperationDetail = {
+                            method,
+                            path,
+                            slug: opSlug,
+                            summary: op.summary,
+                            description: op.description,
+                            operationId: op.operationId,
+                            tags: op.tags,
+                            parameters: op.parameters,
+                            requestBody: op.requestBody,
+                            responses: op.responses,
+                        };
+                        paths.push({
+                            params: { slug: `${base}/${opSlug}` },
+                            props: {
+                                type: "openapi",
+                                entry: null,
+                                redirect: null,
+                                navIndex: i,
+                                base,
+                                operation,
+                                allOperations,
+                                apiInfo,
+                                apiTags,
+                                fetchError: null,
+                            },
+                        });
+                    }
+                }
+            }
+            continue;
+        }
+
+        const collectionName = `${item.type}_${i}` as any;
+        const entries = await getCollection(collectionName);
+
+        let firstSlug: string | undefined;
+        let hasIndex = false;
+
+        for (const entry of entries) {
+            const slug = entryToSlug(entry.id, base);
+            const isIndex = entry.id.replace(/\.(md|mdoc)$/, "") === "index";
+
+            if (isIndex) hasIndex = true;
+            firstSlug ??= slug;
+
+            paths.push({
+                params: { slug },
+                props: {
+                    entry,
+                    type: item.type,
+                    redirect: null,
+                    navIndex: i,
+                    base,
+                    operation: null,
+                    allOperations: [],
+                    apiInfo: null,
+                    apiTags: [],
+                    fetchError: null,
+                },
+            });
+        }
+
+        if (!hasIndex && firstSlug) {
+            paths.push({
+                params: { slug: base },
+                props: { entry: null, type: item.type, redirect: `/${firstSlug}` },
+            });
+        }
+    }
+
+    const firstNavItem = config.nav.find(
+        (item) =>
+            item.type === "docs" ||
+            item.type === "blog" ||
+            item.type === "openapi",
+    );
+    if (firstNavItem) {
+        paths.push({
+            params: { slug: undefined },
+            props: {
+                entry: null,
+                type: firstNavItem.type,
+                redirect: `/${firstNavItem.label.toLowerCase()}`,
+            },
+        });
+    }
+
+    return paths;
+}
+
+const {
+    entry,
+    type,
+    redirect,
+    navIndex,
+    base,
+    operation,
+    allOperations,
+    apiInfo,
+    apiTags,
+    fetchError,
+} = Astro.props;
+
+if (redirect) return Astro.redirect(redirect);
+const rendered = entry ? await render(entry) : null;
+const Content = rendered?.Content;
+---
+
+{
+    type === "docs" && Content && (
+        <DocsLayout
+            title={entry.data.title}
+            navIndex={navIndex}
+            base={base}
+        >
+            <Content />
+        </DocsLayout>
+    )
+}
+{
+    type === "blog" && Content && (
+        <BlogLayout
+            title={entry.data.title}
+            navIndex={navIndex}
+            base={base}
+            pubDate={entry.data.pubDate}
+        >
+            <Content />
+        </BlogLayout>
+    )
+}
+{
+    type === "openapi" && (
+        <OpenApiLayout
+            title={operation?.summary ?? apiInfo?.title ?? base}
+            base={base}
+            apiInfo={apiInfo}
+            apiTags={apiTags}
+            operation={operation}
+            allOperations={allOperations}
+            fetchError={fetchError}
+        />
+    )
+}

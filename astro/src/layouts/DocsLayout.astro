@@ -1,0 +1,120 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import { entryToSlug, segmentToLabel } from "../lib/slugUtils";
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  canonicalUrl?: string;
+  noindex?: boolean;
+  navIndex: number;
+  base: string;
+}
+
+const { title, description, ogImage, canonicalUrl, noindex, navIndex, base } = Astro.props;
+
+const currentPath = Astro.url.pathname;
+
+const entries = await getCollection(`docs_${navIndex}` as any);
+
+type SidebarLink = { label: string; href: string };
+
+const topItems: SidebarLink[] = [];
+const grouped = new Map<string, SidebarLink[]>();
+
+const sorted = [...entries].sort((a: any, b: any) => {
+  return ((a.data as any).order ?? 999) - ((b.data as any).order ?? 999);
+});
+
+for (const entry of sorted) {
+  const entryPath = (entry.id as string).replace(/\.(md|mdoc)$/, "");
+  const isIndex = entryPath === "index";
+  const href = `/${entryToSlug(entry.id as string, base)}`;
+  const parts = entryPath.split("/");
+  const label = (entry.data as any).title ?? segmentToLabel(parts[parts.length - 1]);
+
+  if (isIndex || parts.length === 1) {
+    topItems.push({ label, href });
+  } else {
+    const groupKey = parts.slice(0, -1).join("/");
+    if (!grouped.has(groupKey)) grouped.set(groupKey, []);
+    grouped.get(groupKey)!.push({ label, href });
+  }
+}
+
+function isActive(href: string): boolean {
+  return currentPath === href || currentPath === href + "/";
+}
+
+const groupLabel = segmentToLabel;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage={ogImage}
+  canonicalUrl={canonicalUrl}
+  noindex={noindex}
+>
+  <slot name="head" slot="head" />
+  <div class="docs-layout d-flex">
+    <nav class="docs-sidebar border-end bg-body-secondary flex-shrink-0 overflow-y-auto">
+      <div class="d-flex flex-column gap-1 p-3">
+        {topItems.map((item) => (
+          <a
+            class:list={[
+              "nav-link py-1 px-2 rounded",
+              isActive(item.href)
+                ? "active fw-semibold"
+                : "text-body-secondary",
+            ]}
+            href={item.href}
+            aria-current={isActive(item.href) ? "page" : undefined}
+          >
+            {item.label}
+          </a>
+        ))}
+        {Array.from(grouped.entries()).map(([key, items]) => (
+          <div class="mt-2">
+            <div class="text-uppercase fw-semibold small text-muted px-2 mb-1">
+              {groupLabel(key)}
+            </div>
+            {items.map((item) => (
+              <a
+                class:list={[
+                  "nav-link py-1 px-2 rounded",
+                  isActive(item.href)
+                    ? "active fw-semibold"
+                    : "text-body-secondary",
+                ]}
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+        ))}
+      </div>
+    </nav>
+    <main class="flex-grow-1 overflow-hidden">
+      <div class="container-md py-4 px-4">
+        <slot />
+      </div>
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  .docs-sidebar {
+    width: 260px;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+  }
+  .docs-layout {
+    min-height: calc(100vh - 56px);
+  }
+</style>

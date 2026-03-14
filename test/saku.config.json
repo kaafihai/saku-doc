@@ -1,0 +1,17 @@
+{
+  "title": "Saku Docs",
+  "site": "https://sakudocs.kaafihai.com",
+  "nav": [
+    { "label": "Docs", "type": "docs", "dir": "./docs" },
+    { "label": "Blog", "type": "blog", "dir": "./blog" },
+    {
+      "label": "API",
+      "type": "openapi",
+      "spec": "https://api.cryptlex.com/api-docs/v3/swagger.json"
+    },
+    {
+      "type": "ghLink",
+      "href": "https://github.com/azan-n/saku-docs"
+    }
+  ]
+}

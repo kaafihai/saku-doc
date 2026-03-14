@@ -1,0 +1,141 @@
+---
+import { getConfigEnv } from "../../../lib/env";
+import type { SakuConfig } from "../../../lib/schema";
+import "halfmoon/css/halfmoon.min.css";
+import "../base.css";
+interface Props {
+    title: string;
+    description?: string;
+    ogImage?: string;
+    canonicalUrl?: string;
+    noindex?: boolean;
+}
+
+const {
+    title,
+    description,
+    ogImage,
+    canonicalUrl = Astro.url.href,
+    noindex = false,
+} = Astro.props;
+
+const config = getConfigEnv();
+const currentPath = Astro.url.pathname;
+
+type NavItem = SakuConfig["nav"][number];
+
+function navHref(item: NavItem): string {
+    if (item.type === "ghLink") return item.href;
+    return `/${item.label.toLowerCase()}`;
+}
+
+function isActive(item: NavItem): boolean {
+    const href = navHref(item);
+    return currentPath === href || currentPath.startsWith(href + "/");
+}
+
+const isExternal = (item: NavItem) => item.type === "ghLink";
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{title}</title>
+        {description && <meta name="description" content={description} />}
+        {noindex && <meta name="robots" content="noindex" />}
+        <link rel="canonical" href={canonicalUrl} />
+
+        <meta property="og:title" content={title} />
+        {
+            description && (
+                <meta property="og:description" content={description} />
+            )
+        }
+        {ogImage && <meta property="og:image" content={ogImage} />}
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
+
+        <meta
+            name="twitter:card"
+            content={ogImage ? "summary_large_image" : "summary"}
+        />
+        <meta name="twitter:title" content={title} />
+        {
+            description && (
+                <meta name="twitter:description" content={description} />
+            )
+        }
+        {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+        <meta name="generator" content={Astro.generator} />
+        <slot name="head" />
+    </head>
+    <body>
+        <nav
+            class="navbar navbar-expand-md bg-body-tertiary border-bottom sticky-top"
+        >
+            <div class="container-fluid">
+                {
+                    config.title && (
+                        <a
+                            class="navbar-brand fw-semibold"
+                            href="/"
+                            aria-label="Home"
+                        >
+                            {config.title}
+                        </a>
+                    )
+                }
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#main-nav"
+                    aria-controls="main-nav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="main-nav">
+                    <ul class="navbar-nav ms-auto gap-1">
+                        {
+                            config.nav.map((item) => (
+                                <li class="nav-item">
+                                    <a
+                                        class:list={[
+                                            "nav-link",
+                                            { active: isActive(item) },
+                                        ]}
+                                        href={navHref(item)}
+                                        aria-current={
+                                            isActive(item) ? "page" : undefined
+                                        }
+                                        target={
+                                            isExternal(item)
+                                                ? "_blank"
+                                                : undefined
+                                        }
+                                        rel={
+                                            isExternal(item)
+                                                ? "noopener noreferrer"
+                                                : undefined
+                                        }
+                                    >
+                                        {item.label ?? item.href}
+                                    </a>
+                                </li>
+                            ))
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <slot />
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            is:inline></script>
+    </body>
+</html>
