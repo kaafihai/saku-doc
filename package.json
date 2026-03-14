@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/node": "22",
     "serve": "^14.2.6",
-    "tsup": "8.5.1"
+    "tsup": "8.5.1",
+    "wrangler": "^4.73.0"
   }
 }
