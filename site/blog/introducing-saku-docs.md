@@ -9,8 +9,8 @@ Point it at an OpenAPI spec, a folder of Markdown files, or both, and Saku Docs 
 ## Get Started
 
 ```bash
-npm install -g saku-docs
-saku-docs build -d ./my-docs
+npm install -g saku-doc
+saku-doc build -d ./my-docs
 ```
 
 That's it. Check out the [Getting Started guide](/docs/guide/getting-started) for full details.

@@ -3,9 +3,9 @@
 ## Installation
 
 ```bash
-npm install saku-docs
+npm install saku-doc
 # or
-pnpm add saku-docs
+pnpm add saku-doc
 ```
 
 ## Configuration
@@ -20,7 +20,7 @@ Create a `saku.config.json` in your project root:
     { "label": "Docs", "type": "docs", "dir": "./docs" },
     { "label": "Blog", "type": "blog", "dir": "./blog" },
     { "label": "API", "type": "openapi", "spec": "https://api.com/oas.json" },
-    { "type": "ghLink", "href": "https://github.com/kaafihai/saku-docs" }
+    { "type": "ghLink", "href": "https://github.com/kaafihai/saku-doc" }
   ]
 }
 ```
@@ -40,7 +40,7 @@ docs/
 ## Running Locally
 
 ```bash
-pnpm dev
+saku-doc develop -d ./baseDirectory
 ```
 
 Open [http://localhost:4321](http://localhost:4321) to see your docs.

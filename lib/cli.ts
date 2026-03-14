@@ -14,7 +14,7 @@ const ASTRO_ROOT = fileURLToPath(new URL(".", import.meta.url));
 const program = new Command();
 
 program
-  .name("saku-docs")
+  .name("saku-doc")
   .description("Efficient documentation generator written with Astro!")
   .version(packageJson.version);
 
@@ -28,7 +28,7 @@ function resolveConfig(
   const configPath = resolve(directory, "saku.config.json");
   const config = JSON.parse(readFileSync(configPath, "utf-8"));
 
-  console.log(`Running saku-docs in  ${ASTRO_ROOT}`);
+  console.log(`Running saku-doc in  ${ASTRO_ROOT}`);
 
   const result = z.safeParse(SAKU_CONFIG_SCHEMA, config);
   if (!result.success) {
