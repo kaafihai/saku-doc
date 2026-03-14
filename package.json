@@ -2,6 +2,18 @@
   "name": "saku-docs",
   "type": "module",
   "version": "0.0.1",
+  "description": "Fast static documentation generator — OpenAPI reference, Markdown docs, and blog in one command.",
+  "license": "MIT",
+  "bin": {
+    "saku-docs": "./dist/cli.js"
+  },
+  "files": [
+    "dist/cli.js",
+    "dist/src"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "tsup lib/cli.ts",
     "develop": "tsup lib/cli.ts --watch --onSuccess \"node dist/cli.js develop -d site\"",

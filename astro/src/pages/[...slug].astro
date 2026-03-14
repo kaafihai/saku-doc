@@ -1,6 +1,6 @@
 ---
 import { getCollection, render } from "astro:content";
-import { getConfigEnv } from "../../../lib/env";
+import { getConfigEnv } from "../lib/env";
 import DocsLayout from "../layouts/DocsLayout.astro";
 import BlogLayout from "../layouts/BlogLayout.astro";
 import BlogIndexLayout from "../layouts/BlogIndexLayout.astro";
@@ -105,7 +105,12 @@ export async function getStaticPaths() {
 
         let firstSlug: string | undefined;
         let hasIndex = false;
-        const blogCards: { title: string; href: string; pubDate?: string; description?: string }[] = [];
+        const blogCards: {
+            title: string;
+            href: string;
+            pubDate?: string;
+            description?: string;
+        }[] = [];
 
         for (const entry of entries) {
             const slug = entryToSlug(entry.id, base);
@@ -115,9 +120,13 @@ export async function getStaticPaths() {
             firstSlug ??= slug;
 
             if (item.type === "blog") {
-                const parts = (entry.id as string).replace(/\.(md|mdoc)$/, "").split("/");
+                const parts = (entry.id as string)
+                    .replace(/\.(md|mdoc)$/, "")
+                    .split("/");
                 blogCards.push({
-                    title: (entry.data as any).title ?? segmentToLabel(parts[parts.length - 1]),
+                    title:
+                        (entry.data as any).title ??
+                        segmentToLabel(parts[parts.length - 1]),
                     href: `/${slug}`,
                     pubDate: (entry.data as any).pubDate
                         ? String((entry.data as any).pubDate)
@@ -170,7 +179,12 @@ export async function getStaticPaths() {
             } else {
                 paths.push({
                     params: { slug: base },
-                    props: { entry: null, type: item.type, redirect: `/${firstSlug}`, blogCards: [] },
+                    props: {
+                        entry: null,
+                        type: item.type,
+                        redirect: `/${firstSlug}`,
+                        blogCards: [],
+                    },
                 });
             }
         }
@@ -217,11 +231,7 @@ const Content = rendered?.Content;
 
 {
     type === "docs" && Content && (
-        <DocsLayout
-            title={entry.data.title}
-            navIndex={navIndex}
-            base={base}
-        >
+        <DocsLayout title={entry.data.title} navIndex={navIndex} base={base}>
             <Content />
         </DocsLayout>
     )
@@ -240,10 +250,7 @@ const Content = rendered?.Content;
 }
 {
     type === "blog-index" && (
-        <BlogIndexLayout
-            title={segmentToLabel(base)}
-            cards={blogCards ?? []}
-        />
+        <BlogIndexLayout title={segmentToLabel(base)} cards={blogCards ?? []} />
     )
 }
 {

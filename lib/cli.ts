@@ -4,10 +4,10 @@ import { AstroInlineConfig, build, dev } from "astro";
 import { resolve } from "path";
 import { fileURLToPath } from "url";
 import { readFileSync } from "fs";
-import { SAKU_CONFIG_SCHEMA, SakuConfig } from "./schema";
+import { SAKU_CONFIG_SCHEMA, SakuConfig } from "../astro/src/lib/schema";
 import sitemap from "@astrojs/sitemap";
 import z from "zod";
-import { setConfigEnv } from "./env";
+import { setConfigEnv } from "../astro/src/lib/env";
 
 const ASTRO_ROOT = fileURLToPath(new URL(".", import.meta.url));
 

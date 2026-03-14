@@ -1,7 +1,7 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { resolve } from "path";
-import { getConfigEnv } from "../../lib/env";
+import { getConfigEnv } from "./lib/env";
 
 const cwd = process.env.SAKU_CWD ?? process.cwd();
 

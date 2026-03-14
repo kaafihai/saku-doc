@@ -1,6 +1,6 @@
 ---
-import { getConfigEnv } from "../../../lib/env";
-import type { SakuConfig } from "../../../lib/schema";
+import { getConfigEnv } from "../lib/env";
+import type { SakuConfig } from "../lib/schema";
 import "../base.css";
 interface Props {
     title: string;
@@ -71,9 +71,15 @@ const isExternal = (item: NavItem) => item.type === "ghLink";
         <meta name="generator" content={Astro.generator} />
         <script is:inline>
             const mq = window.matchMedia("(prefers-color-scheme: dark)");
-            document.documentElement.setAttribute("data-bs-theme", mq.matches ? "dark" : "light");
+            document.documentElement.setAttribute(
+                "data-bs-theme",
+                mq.matches ? "dark" : "light",
+            );
             mq.addEventListener("change", (e) => {
-                document.documentElement.setAttribute("data-bs-theme", e.matches ? "dark" : "light");
+                document.documentElement.setAttribute(
+                    "data-bs-theme",
+                    e.matches ? "dark" : "light",
+                );
             });
         </script>
         <slot name="head" />

@@ -27,7 +27,7 @@ Create a `saku.config.json` in your project root:
     { "label": "Docs", "type": "docs", "dir": "./docs" },
     { "label": "Blog", "type": "blog", "dir": "./blog" },
     { "label": "API", "type": "openapi", "spec": "https://api.com/oas.json" },
-    { "type": "ghLink", "href": "https://github.com/azan-n/saku-docs" }
+    { "type": "ghLink", "href": "https://github.com/kaafihai/saku-docs" }
   ]
 }
 ```
